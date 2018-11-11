@@ -1,0 +1,32 @@
+language: java
+jdk:
+- oraclejdk8
+addons:
+  apt:
+    packages:
+    - nodejs
+services:
+- docker
+before_install:
+- docker network create dvs
+- export NETWORK_INTERFACE_NAME=$(route | grep '^default' | grep -o '[^ ]*$')
+- export NETWORK_INTERFACE_ADDRESS=$(ip addr show $NETWORK_INTERFACE_NAME | grep -Po 'inet \K[\d.]+')
+- docker-compose -f compose/deps/docker-compose.yml up &
+- sleep 480
+- docker ps -a
+- npm install newman --global;
+install:
+- ./gradlew assemble
+script:
+- ./gradlew check
+- ./gradlew bootRun &
+- sleep 45
+- curl http://localhost:5644/health
+- cd $TRAVIS_BUILD_DIR/src/test/resources && newman run Projects.postman_collection.json -e ProjectTest.postman_environment.json
+- docker stop $(docker ps -aq)
+- docker rm $(docker ps -aq)
+after_success:
+  - cd $TRAVIS_BUILD_DIR && docker build -t aostreetart/aeselprojects:latest .
+  - cd $TRAVIS_BUILD_DIR && scripts/linux/push_docker.sh $DOCKER_MAIL $DOCKER_UN $DOCKER_PW $TRAVIS_BRANCH
+after_failure:
+- cd $TRAVIS_BUILD_DIR && cat logs/ap.log | grep ERROR

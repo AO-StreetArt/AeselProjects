@@ -1,0 +1,9 @@
+version: '2.1'
+
+services:
+  mongo:
+    image: mongo
+    container_name: document-db
+    restart: always
+    ports:
+      - "27017:27017"

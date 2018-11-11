@@ -1,0 +1,265 @@
+{
+	"info": {
+		"_postman_id": "f9647c61-243e-459c-b20a-4ed0d507754f",
+		"name": "Projects",
+		"description": "Run Basic Tests on the Aesel Asset API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4097a1ec-1105-4108-9231-f2ad2adb94c7",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.environment.unset(\"PROJECT_ID\");",
+							"",
+							"pm.environment.set(\"PROJECT_ID\", jsonData.id);"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Test\",\n\t\"description\": \"This is a test\",\n\t\"category\": \"test\",\n\t\"tags\": [\"testTag\"],\n\t\"sceneGroups\": [\n\t\t{\n\t\t\t\"name\": \"testGroup\",\n\t\t\t\"description\": \"This is a test group\",\n\t\t\t\"category\": \"test\",\n\t\t\t\"scenes\": [\"1234\"]\n\t\t}\n\t],\n\t\"assetCollectionIds\": [\"4321\"]\n}"
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2a4e219b-62db-460c-83ac-30075fb3f32f",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project",
+						"{{PROJECT_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fe0d1767-7550-499b-a5e1-7549b9d48bdf",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"AnotherName\",\n\t\"description\": \"This is a second test\",\n\t\"category\": \"testing\",\n\t\"tags\": [\"testTag2\"],\n\t\"sceneGroups\": [\n\t\t{\n\t\t\t\"name\": \"testGroup2\",\n\t\t\t\"description\": \"This is another test group\",\n\t\t\t\"category\": \"testing\",\n\t\t\t\"scenes\": [\"12345\"]\n\t\t}\n\t],\n\t\"assetCollectionIds\": [\"43212\"]\n}"
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project",
+						"{{PROJECT_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Query Projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2a4e219b-62db-460c-83ac-30075fb3f32f",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project?name=AnotherName",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "AnotherName"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "17228248-7ee8-444e-8f49-7d94cdcba892",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project",
+						"{{PROJECT_ID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "d75c5bce-7cc0-4263-9295-0d3e3b7f440a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "cc80f4d0-e454-484d-bec5-47ed28538c35",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
