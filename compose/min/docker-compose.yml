@@ -12,9 +12,6 @@ services:
     container_name: projects
     ports:
       - "5644:5644"
-    depends_on:
-      registry:
-        condition: service_healthy
     environment:
       - MONGO_HOSTS=document-db
       - SPRING_CLOUD_CONSUL_HOST=registry
