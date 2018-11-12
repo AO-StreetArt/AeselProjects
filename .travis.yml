@@ -10,23 +10,29 @@ services:
 before_install:
 - docker network create dvs
 - export NETWORK_INTERFACE_NAME=$(route | grep '^default' | grep -o '[^ ]*$')
-- export NETWORK_INTERFACE_ADDRESS=$(ip addr show $NETWORK_INTERFACE_NAME | grep -Po 'inet \K[\d.]+')
+- export NETWORK_INTERFACE_ADDRESS=$(ip addr show $NETWORK_INTERFACE_NAME | grep -Po
+  'inet \K[\d.]+')
 - docker-compose -f compose/deps/docker-compose.yml up &
 - sleep 480
 - docker ps -a
 - npm install newman --global;
 install:
-- ./gradlew assemble
+- "./gradlew assemble"
 script:
-- ./gradlew check
-- ./gradlew bootRun &
+- "./gradlew check"
+- "./gradlew bootRun &"
 - sleep 45
 - curl http://localhost:5644/health
-- cd $TRAVIS_BUILD_DIR/src/test/resources/postman && newman run Projects.postman_collection.json -e ProjectTest.postman_environment.json
+- cd $TRAVIS_BUILD_DIR/src/test/resources/postman && newman run Projects.postman_collection.json
+  -e ProjectTest.postman_environment.json
 - docker stop $(docker ps -aq)
 - docker rm $(docker ps -aq)
 after_success:
-  - cd $TRAVIS_BUILD_DIR && docker build -t aostreetart/aeselprojects:latest .
-  - cd $TRAVIS_BUILD_DIR && scripts/linux/push_docker.sh $DOCKER_MAIL $DOCKER_UN $DOCKER_PW $TRAVIS_BRANCH
+- cd $TRAVIS_BUILD_DIR && docker build -t aostreetart/aeselprojects:latest .
+- cd $TRAVIS_BUILD_DIR && scripts/linux/push_docker.sh $DOCKER_MAIL $DOCKER_UN $DOCKER_PW
+  $TRAVIS_BRANCH
 after_failure:
 - cd $TRAVIS_BUILD_DIR && cat logs/ap.log | grep ERROR
+notifications:
+  slack:
+    secure: BUjHHr381RhSnGuhC34wy/iRClbwoLbB7ZnOs3k6MEsgIiqmBob0TMlVBMxtUVEBQX5QOpAt5F2kRcWHfrkDi1l1+of5PC3U/SOab3iiesNaC0gSr2RccWrpOTioAF5wpHd5zJUsgGSB9IstQpp8QLqdQz6LgPqoQqwuq/JC2zA8IYyhFfftoMahfihHXjEB6gTsxPj2wC9qxuRA5WEnWIDUJ7E1wzQG0adMIAGjdTrtG1sLy91eVwvxg7aYtRcKrqahxqBOCoFGDwdtXAOQuXVNI/pP589/Np64q407EGyev86iTYJDC+xA3PBreYRa7oQN/+C16glfQLzBq87FTt2BYPbMqoZlCkf1+sUKUmftxUYvN/oVGzzaWsLar3W7NAdkbSPflwxpfQWdhnxSKtsT1FWNJzjjwciiMc4y/Dcg4mcmxkcJH7rEVt+ciAiy5uBrjCTr55sUeeHKon5NfQA4gzLJIr2nMg+I+YGtPaXNV7poc/n6ccHy++n6TJ2pkdtPRHuGJAZUjDLUss1SeDJ+2nvoWP6V2j+vcnqbLjsQ3BQLGsawevKVNWaMma9kPsV/or6owcnqgO72oj0qznyt1bdxV5XQrR4ZtH8U7UMvVd6VHq/c/9Pd8EHydpLXPeD2K2HfJMO6ZELmUult+ZcDgMeHXSLPYshhFcPULEc=
