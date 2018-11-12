@@ -112,13 +112,13 @@ public class ProjectController {
     responseHeaders.set("Content-Type", "application/json");
     List<Project> returnProjects = null;
     Pageable pageable = new PageRequest(pageNum, recordsInPage);
-    if (name != "") {
+    if (!name.equals("")) {
       returnProjects = projects.findByName(name, pageable);
-    } else if (category != "" && tag != "") {
+    } else if (!category.equals("") && !tag.equals("")) {
       returnProjects = projects.findByCategoryAndTagsIn(category, new HashSet<String>(Arrays.asList(tag)), pageable);
-    } else if (category != "") {
+    } else if (!category.equals("")) {
       returnProjects = projects.findByCategory(category, pageable);
-    } else if (tag != "") {
+    } else if (!tag.equals("")) {
       returnProjects = projects.findByTagsIn(new HashSet<String>(Arrays.asList(tag)), pageable);
     } else {
       returnProjects = projects.findAll(pageable).getContent();
