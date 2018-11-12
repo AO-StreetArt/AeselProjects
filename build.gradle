@@ -38,7 +38,7 @@ checkstyle {
 }
 
 jar {
-	baseName = 'kelona'
+	baseName = 'aeselprojects'
 	version =  '0.0.1'
 }
 

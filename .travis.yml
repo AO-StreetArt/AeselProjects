@@ -22,7 +22,7 @@ script:
 - ./gradlew bootRun &
 - sleep 45
 - curl http://localhost:5644/health
-- cd $TRAVIS_BUILD_DIR/src/test/resources && newman run Projects.postman_collection.json -e ProjectTest.postman_environment.json
+- cd $TRAVIS_BUILD_DIR/src/test/resources/postman && newman run Projects.postman_collection.json -e ProjectTest.postman_environment.json
 - docker stop $(docker ps -aq)
 - docker rm $(docker ps -aq)
 after_success:

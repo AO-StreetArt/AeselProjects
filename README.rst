@@ -1,5 +1,5 @@
-Kelona
-======
+AeselProjects
+=============
 
 .. figure:: https://travis-ci.org/AO-StreetArt/AeselProjects.svg?branch=master
    :alt:
