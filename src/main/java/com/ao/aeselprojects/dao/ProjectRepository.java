@@ -27,8 +27,13 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface ProjectRepository extends MongoRepository<Project, String> {
 
   public List<Project> findByName(String name, Pageable pageable);
+
   public List<Project> findByCategory(String category, Pageable pageable);
+
   public List<Project> findByTagsIn(Set<String> tags, Pageable pageable);
-  public List<Project> findByCategoryAndTagsIn(String category, Set<String> tags, Pageable pageable);
+
+  public List<Project> findByCategoryAndTagsIn(String category,
+                                               Set<String> tags,
+                                               Pageable pageable);
 
 }

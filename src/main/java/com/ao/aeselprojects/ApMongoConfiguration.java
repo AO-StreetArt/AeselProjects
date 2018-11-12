@@ -97,16 +97,16 @@ public class ApMongoConfiguration extends AbstractMongoConfiguration {
     MongoClientOptions options;
     MongoClientOptions.Builder builder = MongoClientOptions.builder();
     if (mongoSslEnabled) {
-      if (!(mongoTrustStore.isEmpty())) {
+      if (!mongoTrustStore.isEmpty()) {
         System.setProperty("javax.net.ssl.trustStore", mongoTrustStore);
       }
-      if (!(mongoTrustStorePw.isEmpty())) {
+      if (!mongoTrustStorePw.isEmpty()) {
         System.setProperty("javax.net.ssl.trustStorePassword", mongoTrustStorePw);
       }
-      if (!(mongoKeyStore.isEmpty())) {
+      if (!mongoKeyStore.isEmpty()) {
         System.setProperty("javax.net.ssl.keyStore", mongoKeyStore);
       }
-      if (!(mongoKeyStorePw.isEmpty())) {
+      if (!mongoKeyStorePw.isEmpty()) {
         System.setProperty("javax.net.ssl.keyStorePassword", mongoKeyStorePw);
       }
       options = builder.sslEnabled(true).build();

@@ -40,7 +40,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -111,11 +111,13 @@ public class ProjectController {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.set("Content-Type", "application/json");
     List<Project> returnProjects = null;
-    Pageable pageable = new PageRequest(pageNum, recordsInPage);
+    Pageable pageable = new QPageRequest(pageNum, recordsInPage);
     if (!name.equals("")) {
       returnProjects = projects.findByName(name, pageable);
     } else if (!category.equals("") && !tag.equals("")) {
-      returnProjects = projects.findByCategoryAndTagsIn(category, new HashSet<String>(Arrays.asList(tag)), pageable);
+      returnProjects = projects.findByCategoryAndTagsIn(category,
+                                                        new HashSet<String>(Arrays.asList(tag)),
+                                                        pageable);
     } else if (!category.equals("")) {
       returnProjects = projects.findByCategory(category, pageable);
     } else if (!tag.equals("")) {
