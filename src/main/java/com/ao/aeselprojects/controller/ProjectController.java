@@ -127,7 +127,7 @@ public class ProjectController {
     }
     if (returnProjects.size() == 0 && returnCode == HttpStatus.OK) {
       returnCode = HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE;
-      logger.debug("No Asset Collection found");
+      logger.debug("No Projects found");
       returnProjects = new ArrayList<Project>();
     }
 
