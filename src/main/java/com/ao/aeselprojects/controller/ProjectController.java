@@ -113,14 +113,18 @@ public class ProjectController {
     List<Project> returnProjects = null;
     Pageable pageable = new PageRequest(pageNum, recordsInPage);
     if (!name.equals("")) {
+      logger.debug("Finding Projects by Name: {}", name);
       returnProjects = projects.findByName(name, pageable);
     } else if (!category.equals("") && !tag.equals("")) {
+      logger.debug("Finding Projects by Category: {}, and Tag: {}", name, tag);
       returnProjects = projects.findByCategoryAndTagsIn(category,
                                                         new HashSet<String>(Arrays.asList(tag)),
                                                         pageable);
     } else if (!category.equals("")) {
+      logger.debug("Finding Projects by Category: {}", category);
       returnProjects = projects.findByCategory(category, pageable);
     } else if (!tag.equals("")) {
+      logger.debug("Finding Projects by Tag: {}", tag);
       returnProjects = projects.findByTagsIn(new HashSet<String>(Arrays.asList(tag)), pageable);
     } else {
       returnProjects = projects.findAll(pageable).getContent();
