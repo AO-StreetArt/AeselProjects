@@ -34,6 +34,7 @@ public class Project {
   public String name;
   public String description;
   public String category;
+  public String thumbnail;
   public List<String> tags;
   public List<SceneGroup> sceneGroups;
   public List<String> assetCollectionIds;
