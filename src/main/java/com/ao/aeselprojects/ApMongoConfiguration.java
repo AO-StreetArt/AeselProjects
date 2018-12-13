@@ -126,7 +126,7 @@ public class ApMongoConfiguration extends AbstractMongoConfiguration {
       List<MongoCredential> mongoCredsList = new ArrayList<MongoCredential>();
       mongoCredsList.add(MongoCredential.createCredential(
           mongoUsername,
-          "_avc",
+          "_projects",
           mongoPassword.toCharArray()));
 
       // Return a DB Client with Authentication
