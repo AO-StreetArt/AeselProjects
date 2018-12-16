@@ -40,7 +40,7 @@ public class ApBasicAuthEntryPoint extends BasicAuthenticationEntryPoint {
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    setRealmName("AVC_REALM");
+    setRealmName("PROJECTS_REALM");
     super.afterPropertiesSet();
   }
 }

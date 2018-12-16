@@ -140,6 +140,6 @@ public class ApMongoConfiguration extends AbstractMongoConfiguration {
   // Define Mongo Database name
   @Override
   protected String getDatabaseName() {
-    return "_avc";
+    return "_projects";
   }
 }
