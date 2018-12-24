@@ -142,4 +142,10 @@ public class ApMongoConfiguration extends AbstractMongoConfiguration {
   protected String getDatabaseName() {
     return "_projects";
   }
+
+  // Definition for accessing underlying Mongo Driver
+  @Bean
+  public MongoDatabase mongoDatabase() {
+    return mongoDbFactory().getDb();
+  }
 }
