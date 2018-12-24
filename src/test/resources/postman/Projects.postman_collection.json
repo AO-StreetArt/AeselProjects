@@ -66,7 +66,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "2a4e219b-62db-460c-83ac-30075fb3f32f",
+						"id": "26e4bb9c-f3f2-4b68-a050-480100b56e67",
 						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"Response time is less than 5000ms\", function () {",
@@ -76,7 +76,14 @@
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
-							""
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"JSON Data Check\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"id\");",
+							"    pm.expect(jsonData.name).to.equal(\"Test\");",
+							"});"
 						]
 					}
 				}
@@ -97,6 +104,155 @@
 						"v1",
 						"project",
 						"{{PROJECT_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Scene Group",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5fb6409e-8cc8-46d9-9a89-97d8575809f3",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"testGroup2\",\n\t\"description\": \"This is another test group\",\n\t\"category\": \"test2\"\n}"
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}/groups",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project",
+						"{{PROJECT_ID}}",
+						"groups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Tag",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fbe194f1-6250-4792-a5d4-284ce27c5280",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}/tags/54321",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project",
+						"{{PROJECT_ID}}",
+						"tags",
+						"54321"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Asset Collection",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fbe194f1-6250-4792-a5d4-284ce27c5280",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}/collections/abcdef",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project",
+						"{{PROJECT_ID}}",
+						"collections",
+						"abcdef"
 					]
 				}
 			},
@@ -135,7 +291,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"AnotherName\",\n\t\"description\": \"This is a second test\",\n\t\"category\": \"testing\",\n\t\"tags\": [\"testTag2\"],\n\t\"sceneGroups\": [\n\t\t{\n\t\t\t\"name\": \"testGroup2\",\n\t\t\t\"description\": \"This is another test group\",\n\t\t\t\"category\": \"testing\",\n\t\t\t\"scenes\": [\"12345\"]\n\t\t}\n\t],\n\t\"assetCollectionIds\": [\"43212\"]\n}"
+					"raw": "{\n\t\"name\": \"oneName\",\n\t\"description\": \"This is a third test\",\n\t\"category\": \"animation\"\n}"
 				},
 				"url": {
 					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}",
@@ -152,12 +308,63 @@
 			"response": []
 		},
 		{
-			"name": "Query Projects",
+			"name": "Check Project Updates",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "2a4e219b-62db-460c-83ac-30075fb3f32f",
+						"id": "6b19f936-6d62-4145-ae31-5c8b63dda401",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"JSON Data Check\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"id\");",
+							"    pm.expect(jsonData.name).to.equal(\"oneName\");",
+							"    pm.expect(jsonData.assetCollectionIds.length).to.eql(2);",
+							"    pm.expect(jsonData.sceneGroups.length).to.eql(2);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project",
+						"{{PROJECT_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Tag",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fbe194f1-6250-4792-a5d4-284ce27c5280",
 						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"Response time is less than 5000ms\", function () {",
@@ -173,6 +380,159 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}/tags/54321",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project",
+						"{{PROJECT_ID}}",
+						"tags",
+						"54321"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Scene Group",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5fb6409e-8cc8-46d9-9a89-97d8575809f3",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}/groups/testGroup2",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project",
+						"{{PROJECT_ID}}",
+						"groups",
+						"testGroup2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Asset Collection",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fbe194f1-6250-4792-a5d4-284ce27c5280",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}/collections/abcdef",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project",
+						"{{PROJECT_ID}}",
+						"collections",
+						"abcdef"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Query Projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3efd3a1a-86f7-4a71-be29-5479b173f1c5",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"JSON Data Check\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData[0]).to.have.property(\"id\");",
+							"    pm.expect(jsonData[0].assetCollectionIds.length).to.eql(1);",
+							"    pm.expect(jsonData[0].sceneGroups.length).to.eql(1);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -180,7 +540,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{AESEL_URL}}/v1/project?name=AnotherName",
+					"raw": "{{AESEL_URL}}/v1/project?name=oneName",
 					"host": [
 						"{{AESEL_URL}}"
 					],
@@ -191,7 +551,7 @@
 					"query": [
 						{
 							"key": "name",
-							"value": "AnotherName"
+							"value": "oneName"
 						}
 					]
 				}
