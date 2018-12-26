@@ -504,12 +504,111 @@
 			"response": []
 		},
 		{
+			"name": "Update Scene Group",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e817ee64-18bf-46ef-9baa-f1615a64667a",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"testGroup3\",\n\t\"description\": \"A different description.\",\n\t\"category\": \"test4\"\n}"
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}/groups/testGroup",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project",
+						"{{PROJECT_ID}}",
+						"groups",
+						"testGroup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Scene to Scene Group",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e817ee64-18bf-46ef-9baa-f1615a64667a",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}/groups/testGroup3/scenes/abcdef",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project",
+						"{{PROJECT_ID}}",
+						"groups",
+						"testGroup3",
+						"scenes",
+						"abcdef"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Query Projects",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "3efd3a1a-86f7-4a71-be29-5479b173f1c5",
+						"id": "76771ed0-acc8-4b92-870f-d951fa00e300",
 						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"Response time is less than 5000ms\", function () {",
@@ -527,6 +626,7 @@
 							"    pm.expect(jsonData[0]).to.have.property(\"id\");",
 							"    pm.expect(jsonData[0].assetCollectionIds.length).to.eql(1);",
 							"    pm.expect(jsonData[0].sceneGroups.length).to.eql(1);",
+							"    pm.expect(jsonData[0].sceneGroups[0].name).to.equal(\"testGroup3\");",
 							"});"
 						]
 					}
@@ -553,6 +653,54 @@
 							"key": "name",
 							"value": "oneName"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Scene from Scene Group",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e817ee64-18bf-46ef-9baa-f1615a64667a",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{AESEL_URL}}/v1/project/{{PROJECT_ID}}/groups/testGroup3/scenes/1234",
+					"host": [
+						"{{AESEL_URL}}"
+					],
+					"path": [
+						"v1",
+						"project",
+						"{{PROJECT_ID}}",
+						"groups",
+						"testGroup3",
+						"scenes",
+						"1234"
 					]
 				}
 			},
