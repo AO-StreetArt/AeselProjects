@@ -35,6 +35,8 @@ public class Project {
   public String description;
   public String category;
   public String thumbnail;
+  public String user;
+  public boolean isPublic;
   public List<String> tags;
   public List<SceneGroup> sceneGroups;
   public List<String> assetCollectionIds;

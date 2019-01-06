@@ -70,6 +70,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -108,13 +109,19 @@ public class ProjectController {
   */
   @GetMapping("/v1/project/{id}")
   @ResponseBody
-  public ResponseEntity<Project> getProject(@PathVariable String id) {
+  public ResponseEntity<Project> getProject(@PathVariable String id,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
     logger.info("Responding to Project Get Request");
     HttpStatus returnCode = HttpStatus.OK;
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.set("Content-Type", "application/json");
     Project returnProject = null;
-    Optional<Project> existingProject = projects.findById(id);
+    Optional<Project> existingProject = null;
+    if (aeselPrincipal.isEmpty()) {
+      existingProject = projects.findById(id);
+    } else {
+      existingProject = projects.findPublicOrPrivateById(id, aeselPrincipal);
+    }
     if (existingProject.isPresent()) {
       returnProject = existingProject.get();
     } else {
@@ -137,29 +144,56 @@ public class ProjectController {
       @RequestParam(value = "category", defaultValue = "") String category,
       @RequestParam(value = "tag", defaultValue = "") String tag,
       @RequestParam(value = "num_records", defaultValue = "10") int recordsInPage,
-      @RequestParam(value = "page", defaultValue = "0") int pageNum) {
+      @RequestParam(value = "page", defaultValue = "0") int pageNum,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
     logger.info("Responding to Project Get Request");
     HttpStatus returnCode = HttpStatus.OK;
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.set("Content-Type", "application/json");
     List<Project> returnProjects = null;
     Pageable pageable = new PageRequest(pageNum, recordsInPage);
-    if (!name.equals("")) {
-      logger.debug("Finding Projects by Name: {}", name);
-      returnProjects = projects.findByName(name, pageable);
-    } else if (!category.equals("") && !tag.equals("")) {
-      logger.debug("Finding Projects by Category: {}, and Tag: {}", name, tag);
-      returnProjects = projects.findByCategoryAndTagsIn(category,
-                                                        new HashSet<String>(Arrays.asList(tag)),
-                                                        pageable);
-    } else if (!category.equals("")) {
-      logger.debug("Finding Projects by Category: {}", category);
-      returnProjects = projects.findByCategory(category, pageable);
-    } else if (!tag.equals("")) {
-      logger.debug("Finding Projects by Tag: {}", tag);
-      returnProjects = projects.findByTagsIn(new HashSet<String>(Arrays.asList(tag)), pageable);
+
+    // Building non-user based queries
+    if (aeselPrincipal.equals("")) {
+      if (!name.equals("")) {
+        logger.debug("Finding Projects by Name: {}", name);
+        returnProjects = projects.findByName(name, pageable);
+      } else if (!category.equals("") && !tag.equals("")) {
+        logger.debug("Finding Projects by Category: {}, and Tag: {}", name, tag);
+        returnProjects = projects.findByCategoryAndTagsIn(category,
+                                                          new HashSet<String>(Arrays.asList(tag)),
+                                                          pageable);
+      } else if (!category.equals("")) {
+        logger.debug("Finding Projects by Category: {}", category);
+        returnProjects = projects.findByCategory(category, pageable);
+      } else if (!tag.equals("")) {
+        logger.debug("Finding Projects by Tag: {}", tag);
+        returnProjects = projects.findByTagsIn(new HashSet<String>(Arrays.asList(tag)), pageable);
+      } else {
+        returnProjects = projects.findAll(pageable).getContent();
+      }
+
+    // Building user-based queries for public/private projects
     } else {
-      returnProjects = projects.findAll(pageable).getContent();
+      logger.debug("Project Query User: {}", aeselPrincipal);
+      if (!name.equals("")) {
+        logger.debug("Finding Projects by Name: {}", name);
+        returnProjects = projects.findPublicOrPrivateByName(name, aeselPrincipal, pageable);
+      } else if (!category.equals("") && !tag.equals("")) {
+        logger.debug("Finding Projects by Category: {}, and Tag: {}", name, tag);
+        returnProjects = projects.findPublicOrPrivateByCategoryAndTagsIn(category,
+                                                          new HashSet<String>(Arrays.asList(tag)),
+                                                          aeselPrincipal,
+                                                          pageable);
+      } else if (!category.equals("")) {
+        logger.debug("Finding Projects by Category: {}", category);
+        returnProjects = projects.findPublicOrPrivateByCategory(category, aeselPrincipal, pageable);
+      } else if (!tag.equals("")) {
+        logger.debug("Finding Projects by Tag: {}", tag);
+        returnProjects = projects.findPublicOrPrivateByTagsIn(new HashSet<String>(Arrays.asList(tag)), aeselPrincipal, pageable);
+      } else {
+        returnProjects = projects.findPublicOrPrivate(aeselPrincipal, pageable);
+      }
     }
     if (returnProjects.size() == 0 && returnCode == HttpStatus.OK) {
       returnCode = HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE;
@@ -176,7 +210,8 @@ public class ProjectController {
   */
   @DeleteMapping("/v1/project/{id}")
   @ResponseBody public ResponseEntity<String> deleteProject(
-      @PathVariable String id) {
+      @PathVariable String id,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
     logger.info("Responding to Project Delete Request");
     HttpStatus returnCode = HttpStatus.OK;
     HttpHeaders responseHeaders = new HttpHeaders();
@@ -191,11 +226,13 @@ public class ProjectController {
   @PostMapping("/v1/project")
   @ResponseBody
   public ResponseEntity<Project> createProject(
-      @RequestBody Project inpProject) {
+      @RequestBody Project inpProject,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
     logger.info("Responding to Project Create Request");
     HttpStatus returnCode = HttpStatus.OK;
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.set("Content-Type", "application/json");
+    inpProject.setUser(aeselPrincipal);
     Project responseProject = projects.insert(inpProject);
     return new ResponseEntity<Project>(responseProject, responseHeaders, returnCode);
   }
@@ -206,10 +243,33 @@ public class ProjectController {
     return new BasicDBObject(opType, update);
   }
 
-  private BasicDBObject genIdQuery(String id) {
-    BasicDBObject query = new BasicDBObject();
-    query.put("_id", new ObjectId(id));
-    return query;
+  private BasicDBObject genIdQuery(String id, String aeselPrincipal) {
+    // Create the ID section of the query
+    BasicDBObject innerIdQuery = new BasicDBObject();
+    innerIdQuery.put("_id", new ObjectId(id));
+
+    // Start the array of query objects, and add the ID query to it
+    ArrayList<BasicDBObject> queryObjectList = new ArrayList<BasicDBObject>();
+    queryObjectList.add(innerIdQuery);
+
+    // If X-Aesel-Principal header is present on request, then activate
+    // public and private projects for individual users.
+    if (!(aeselPrincipal.equals(""))) {
+      BasicDBObject innerUserQuery = new BasicDBObject();
+      innerUserQuery.put("user", aeselPrincipal);
+      BasicDBObject innerPublicQuery = new BasicDBObject();
+      innerPublicQuery.put("isPublic", true);
+      ArrayList<BasicDBObject> innerQueryList = new ArrayList<BasicDBObject>();
+      innerQueryList.add(innerUserQuery);
+      innerQueryList.add(innerPublicQuery);
+      BasicDBObject innerOrQuery = new BasicDBObject();
+      innerOrQuery.put("$or", innerQueryList);
+      queryObjectList.add(innerOrQuery);
+    }
+
+    BasicDBObject outerQuery = new BasicDBObject();
+    outerQuery.put("$and", queryObjectList);
+    return outerQuery;
   }
 
   /**
@@ -219,8 +279,9 @@ public class ProjectController {
   @ResponseBody
   public ResponseEntity<String> updateProject(
       @PathVariable String id,
-      @RequestBody Project inpProject) {
-    logger.info("Responding to Project Create Request");
+      @RequestBody Project inpProject,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
+    logger.info("Responding to Project Update Request");
 
     BasicDBObject updateQuery = new BasicDBObject();
     if (inpProject.getName() != null && !(inpProject.getName().isEmpty())) {
@@ -236,7 +297,7 @@ public class ProjectController {
       updateQuery.put("thumbnail", inpProject.getThumbnail());
     }
 
-    UpdateResult result = mongoCollection.updateOne(genIdQuery(id),
+    UpdateResult result = mongoCollection.updateOne(genIdQuery(id, aeselPrincipal),
         new BasicDBObject("$set", updateQuery), new UpdateOptions());
 
     // Set the http response code
@@ -250,9 +311,9 @@ public class ProjectController {
   }
 
   private ResponseEntity<String> updateArrayAttr(String projectKey,
-      String attrKey, String attrVal, String updType) {
+      String attrKey, String attrVal, String updType, String aeselPrincipal) {
     BasicDBObject updateQuery = genUpdateQuery(attrKey, attrVal, updType);
-    BasicDBObject query = genIdQuery(projectKey);
+    BasicDBObject query = genIdQuery(projectKey, aeselPrincipal);
     UpdateResult result = mongoCollection.updateOne(query, updateQuery, new UpdateOptions());
     // Set the http response code
     HttpStatus returnCode = HttpStatus.OK;
@@ -272,9 +333,10 @@ public class ProjectController {
   @ResponseBody
   public ResponseEntity<String> addTagToProject(
       @PathVariable String projectKey,
-      @PathVariable String tagValue) {
+      @PathVariable String tagValue,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
     logger.info("Adding tag to Project");
-    return updateArrayAttr(projectKey, "tags", tagValue, "$push");
+    return updateArrayAttr(projectKey, "tags", tagValue, "$push", aeselPrincipal);
   }
 
   /**
@@ -284,9 +346,10 @@ public class ProjectController {
   @ResponseBody
   public ResponseEntity<String> addCollectionToProject(
       @PathVariable String projectKey,
-      @PathVariable String collectionId) {
+      @PathVariable String collectionId,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
     logger.info("Adding Asset Collection to Project");
-    return updateArrayAttr(projectKey, "assetCollectionIds", collectionId, "$push");
+    return updateArrayAttr(projectKey, "assetCollectionIds", collectionId, "$push", aeselPrincipal);
   }
 
   /**
@@ -296,9 +359,10 @@ public class ProjectController {
   @ResponseBody
   public ResponseEntity<String> removeTagFromProject(
       @PathVariable String projectKey,
-      @PathVariable String tagValue) {
+      @PathVariable String tagValue,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
     logger.info("Removing tag from Project");
-    return updateArrayAttr(projectKey, "tags", tagValue, "$pull");
+    return updateArrayAttr(projectKey, "tags", tagValue, "$pull", aeselPrincipal);
   }
 
   /**
@@ -308,8 +372,9 @@ public class ProjectController {
   @ResponseBody
   public ResponseEntity<String> removeCollectionFromProject(
       @PathVariable String projectKey,
-      @PathVariable String collectionId) {
+      @PathVariable String collectionId,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
     logger.info("Removing Asset Collection to Project");
-    return updateArrayAttr(projectKey, "assetCollectionIds", collectionId, "$pull");
+    return updateArrayAttr(projectKey, "assetCollectionIds", collectionId, "$pull", aeselPrincipal);
   }
 }
