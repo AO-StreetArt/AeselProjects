@@ -30,3 +30,9 @@ Configuration:
       Logger:
         - name: aeselprojects.ProjectController
           level: debug
+      Logger:
+        - name: aeselprojects.SceneGroupController
+          level: debug
+      Logger:
+        - name: aeselprojects.AeselProfileParser
+          level: debug

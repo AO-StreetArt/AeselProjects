@@ -72,6 +72,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -90,7 +91,7 @@ public class SceneGroupController {
 
   // Asset Controller Logger
   private static final Logger logger =
-      LogManager.getLogger("aeselprojects.ProjectController");
+      LogManager.getLogger("aeselprojects.SceneGroupController");
 
   @Autowired
   MongoDatabase mongoDb;
@@ -124,8 +125,9 @@ public class SceneGroupController {
   @ResponseBody
   public ResponseEntity<String> createSceneGroup(
       @PathVariable String projectKey,
-      @RequestBody SceneGroup inpGroup) {
-    logger.info("Attempting to add Scene Group {} to Project {}", inpGroup.getName(), projectKey);
+      @RequestBody SceneGroup inpGroup,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
+    logger.info("Attempting to add Scene Group {} to Project {} with user {}", inpGroup.getName(), projectKey, aeselPrincipal);
 
     // Build the Mongo Update Queries
     BasicDBObject sgObject = new BasicDBObject();
@@ -159,7 +161,8 @@ public class SceneGroupController {
   public ResponseEntity<String> updateSceneGroup(
       @PathVariable String projectKey,
       @PathVariable String groupName,
-      @RequestBody SceneGroup inpGroup) {
+      @RequestBody SceneGroup inpGroup,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
     logger.info("Attempting to update Scene Group {} in Project {}", groupName, projectKey);
 
     // Build the Mongo Update Queries
@@ -187,7 +190,8 @@ public class SceneGroupController {
   @ResponseBody
   public ResponseEntity<String> deleteSceneGroup(
       @PathVariable String projectKey,
-      @PathVariable String groupName) {
+      @PathVariable String groupName,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
     logger.info("Attempting to remove Scene Group {} from Project {}", groupName, projectKey);
 
     // Build the Mongo Update Queries
@@ -215,7 +219,8 @@ public class SceneGroupController {
   public ResponseEntity<String> addSceneToSceneGroup(
       @PathVariable String projectKey,
       @PathVariable String groupName,
-      @PathVariable String sceneKey) {
+      @PathVariable String sceneKey,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
     logger.info("Attempting to add Scene {} Scene Group {} in Project {}",
         sceneKey, groupName, projectKey);
 
@@ -243,7 +248,8 @@ public class SceneGroupController {
   public ResponseEntity<String> removeSceneFromSceneGroup(
       @PathVariable String projectKey,
       @PathVariable String groupName,
-      @PathVariable String sceneKey) {
+      @PathVariable String sceneKey,
+      @RequestHeader(name="X-Aesel-Principal", defaultValue="") String aeselPrincipal) {
     logger.info("Attempting to add Scene {} Scene Group {} in Project {}",
         sceneKey, groupName, projectKey);
 

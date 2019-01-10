@@ -23,17 +23,39 @@ import java.util.Optional;
 import java.util.Set;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 public interface ProjectRepository extends MongoRepository<Project, String> {
 
+  @Query("{ '$or': [ {'isPublic': true}, {'user': ?0} ] }")
+  public List<Project> findPublicOrPrivate(String user, Pageable pageable);
+
+  @Query("{ '$and': [ {'$or': [ {'isPublic': true}, {'user': ?1} ]}, {'id': ?0} ]}")
+  public Optional<Project> findPublicOrPrivateById(String id, String user);
+
   public List<Project> findByName(String name, Pageable pageable);
+
+  @Query("{ '$and': [ {'$or': [ {'isPublic': true}, {'user': ?1} ]}, {'name': ?0} ]}")
+  public List<Project> findPublicOrPrivateByName(String name, String user, Pageable pageable);
 
   public List<Project> findByCategory(String category, Pageable pageable);
 
+  @Query("{ '$and': [ {'$or': [ {'isPublic': true}, {'user': ?1} ]}, {'category': ?0} ]}")
+  public List<Project> findPublicOrPrivateByCategory(String category, String user, Pageable pageable);
+
   public List<Project> findByTagsIn(Set<String> tags, Pageable pageable);
+
+  @Query("{ '$and': [ {'$or': [ {'isPublic': true}, {'user': ?1} ]}, {'tags': {'$in': ?0}} ]}")
+  public List<Project> findPublicOrPrivateByTagsIn(Set<String> tags, String user, Pageable pageable);
 
   public List<Project> findByCategoryAndTagsIn(String category,
                                                Set<String> tags,
                                                Pageable pageable);
+
+  @Query("{ '$and': [ {'$or': [ {'isPublic': true}, {'user': ?2} ]}, {'$and': [{'category': ?0}, {'tags': {'$in': ?1}}] } ]}")
+  public List<Project> findPublicOrPrivateByCategoryAndTagsIn(String category,
+                                                              Set<String> tags,
+                                                              String user,
+                                                              Pageable pageable);
 
 }
