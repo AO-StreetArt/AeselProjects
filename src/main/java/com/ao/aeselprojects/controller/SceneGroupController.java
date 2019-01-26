@@ -167,9 +167,15 @@ public class SceneGroupController {
 
     // Build the Mongo Update Queries
     BasicDBObject innerUpdateQuery = new BasicDBObject();
-    innerUpdateQuery.put("sceneGroups.$.name", inpGroup.getName());
-    innerUpdateQuery.put("sceneGroups.$.description", inpGroup.getDescription());
-    innerUpdateQuery.put("sceneGroups.$.category", inpGroup.getCategory());
+    if (inpGroup.getName() != null && !(inpGroup.getName().isEmpty())) {
+      innerUpdateQuery.put("sceneGroups.$.name", inpGroup.getName());
+    }
+    if (inpGroup.getDescription() != null) {
+      innerUpdateQuery.put("sceneGroups.$.description", inpGroup.getDescription());
+    }
+    if (inpGroup.getCategory() != null) {
+      innerUpdateQuery.put("sceneGroups.$.category", inpGroup.getCategory());
+    }
     BasicDBObject outerUpdateQuery = new BasicDBObject("$set", innerUpdateQuery);
 
     BasicDBObject query = new BasicDBObject();
